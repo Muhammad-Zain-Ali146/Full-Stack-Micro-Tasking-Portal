@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Post a Task - MicroTasker{% endblock %}
+
+{% block content %}
+<div class="task-card">
+    <h2>Post a New Micro-Task</h2>
+    <form action="/post-task" method="POST" class="form-container">
+        <div class="form-group">
+            <label for="title">Task Title</label>
+            <input type="text" id="title" name="title" placeholder="e.g. Build a Python Script" required>
+        </div>
+        <div class="form-group">
+            <label for="budget">Budget ($ / PKR)</label>
+            <input type="number" id="budget" name="budget" placeholder="e.g. 50" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Task Description</label>
+            <textarea id="description" name="description" rows="5" placeholder="Explain task requirements..." required></textarea>
+        </div>
+        <button type="submit" class="btn-large">Submit Task</button>
+    </form>
+</div>
+{% endblock %}

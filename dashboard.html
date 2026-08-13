@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - MicroTasker{% endblock %}
+
+{% block content %}
+<div class="dashboard-section">
+    <h2>User Dashboard</h2>
+    <p>Welcome to your control center. Here you will track your posted and active tasks.</p>
+
+    <!-- Posted Tasks Section -->
+    <div class="task-list" style="margin-top: 25px;">
+        <h3>Your Posted Tasks</h3>
+        
+        {% if tasks %}
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                {% for task in tasks %}
+                    <div class="task-card" style="border: 1px solid #ddd; padding: 18px; border-radius: 8px; background-color: #f9f9f9; text-align: left;">
+                        <h4 style="margin-top: 0; color: #333;">{{ task.title }}</h4>
+                        <p style="color: #666; margin: 8px 0;">{{ task.description }}</p>
+                        <p style="margin-bottom: 0;"><strong>Budget:</strong> $ {{ task.budget }}</p>
+                    <p style="margin-bottom: 0;"><strong>Budget:</strong> $ {{ task.budget }}</p>
+                    
+                    <!-- YAHAN YE NAYA CODE ADD KAREIN (Line 21 par) -->
+                    <div style="margin-top: 12px;">
+                        {% if task.status != 'Completed' %}
+                            <form action="{{ url_for('mark_completed', task_id=task.id) }}" method="POST" style="display: inline;">
+                                <button type="submit" style="background-color: #27ae60; color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-size: 0.85em; font-weight: bold;">
+                                    Mark as Completed
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="background-color: #e0e0e0; color: #555; padding: 5px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">
+                                ✓ Completed
+                            </span>
+                        {% endif %}
+                    </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color: #777; margin-top: 15px;">No tasks posted yet! Click on "Post Task" to create one.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

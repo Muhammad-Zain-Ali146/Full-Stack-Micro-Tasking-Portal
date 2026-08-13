@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - MicroTasker{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1>Post Quick Tasks or Earn by Completing Them!</h1>
+    <p>Connecting people needing micro-services with skilled individuals in real-time.</p>
+    <a href="{{ url_for('explore_tasks')}}" class="btn-large">Browse Available Tasks</a>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Micro-Task Portal{% endblock %}</title>
+    <!-- CSS File Link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="{{ url_for('home') }}">MicroTasker</a>
+        </div>
+       <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('explore_tasks')}}">Browse Tasks</a></li>
+            {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('post_task') }}">Post Task</a></li>
+                <li><a href="{{ url_for('logout') }}" class="btn-primary">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+                <li><a href="{{ url_for('register') }}" class="btn-primary">Register</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Main Dynamic Content Block -->
+    <div class="container">
+        {% block content %}
+        <!-- Sub-pages ka content yahan load hoga -->
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 MicroTasker Portal. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript File Link -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }} - MicroTasker{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 30px auto; padding: 25px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fff; text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+        <h2 style="margin: 0; color: #2c3e50;">{{ task.title }}</h2>
+        <span style="background-color: #27ae60; color: white; padding: 6px 14px; border-radius: 20px; font-weight: bold;">
+            $ {{ task.budget }}
+        </span>
+    </div>
+
+    <div style="margin: 20px 0;">
+        <h4>Description:</h4>
+        <p style="color: #555; line-height: 1.6; font-size: 1.05em;">{{ task.description }}</p>
+    </div>
+
+    <div style="margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee; font-size: 0.9em; color: #7f8c8d;">
+        <p><strong>Posted By:</strong> {{ task.author.username if task.author else 'Unknown' }}</p>
+    </div>
+
+    <div style="margin-top: 20px; text-align: right;">
+        <a href="{{ url_for('explore_tasks') }}" style="text-decoration: none; color: #3498db; font-weight: bold;">← Back to All Tasks</a>
+    </div>
+</div>
+{% endblock %}
