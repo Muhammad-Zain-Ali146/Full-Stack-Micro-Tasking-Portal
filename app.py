@@ -1,30 +1,16 @@
+import os
 import sys
 import traceback
-from flask import Flask
-
-app = Flask(__name__)
-
-# Catch all import/runtime crashes and print them on screen
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def catch_all(path):
-    try:
-        # Apni baki app logic import/run karne ki koshish
-        import main_app # Ya jo bhi aap ka main logic handler hai
-    except Exception as e:
-        return f"<h1>Deployment Diagnostic Error:</h1><pre>{traceback.format_exc()}</pre>", 500
-
-from flask import Flask, render_template , request ,redirect , url_for , flash
+from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from config import Config
 from models import db, User, Task
 
 app = Flask(__name__)
-app.config['DEBUG'] = True
-app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config.from_object(Config)
 
+# Flask-Login setup
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -33,8 +19,13 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Initialize Database
+# Initialize Database tables automatically inside app context
 db.init_app(app)
+with app.app_context():
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"Database init error: {e}")
 
 # 1. Home Route
 @app.route('/')
@@ -45,7 +36,6 @@ def home():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    # Logged-in user ke post kiye hue saare tasks database se laana
     user_tasks = Task.query.filter_by(user_id=current_user.id).all()
     return render_template('dashboard.html', tasks=user_tasks)
 
@@ -56,7 +46,6 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        # User ko database mein dhoondna
         user = User.query.filter_by(email=email).first()
         
         if user and check_password_hash(user.password_hash, password):
@@ -75,13 +64,11 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        # Check agar email pehle se exist karti hai
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash('Email already registered!', 'warning')
             return redirect(url_for('register'))
             
-        # Naya user create aur password hash karna
         hashed_pw = generate_password_hash(password)
         new_user = User(username=username, email=email, password_hash=hashed_pw)
         
@@ -102,7 +89,6 @@ def post_task():
         description = request.form.get('description')
         budget = request.form.get('budget')
         
-        # Naya task Object banana (current_user.id se link karke)
         new_task = Task(
             title=title,
             description=description,
@@ -121,14 +107,12 @@ def post_task():
 # Explore/Browse All Tasks Route
 @app.route('/tasks')
 def explore_tasks():
-    # Database se saare tasks fetch karna (Sab se naye tasks pehle dikhenge)
     all_tasks = Task.query.order_by(Task.created_at.desc()).all()
     return render_template('explore.html', tasks=all_tasks)
 
 # Task Detail Route
 @app.route('/task/<int:task_id>')
 def task_detail(task_id):
-    # Specific task ID se fetch karna
     task = Task.query.get_or_404(task_id)
     return render_template('task_detail.html', task=task)
 
@@ -137,17 +121,14 @@ def task_detail(task_id):
 @login_required
 def mark_completed(task_id):
     task = Task.query.get_or_404(task_id)
-    
-    # Sirf task ka creator hi isko complete mark kar sakta hai
     if task.user_id == current_user.id:
-        task.status = 'Completed'  # Ensure karein aapke Task model mein status field ho, warna budget/title change kar sakte hain
+        task.status = 'Completed'
         db.session.commit()
         flash('Task marked as completed!', 'success')
     else:
         flash('Unauthorized action.', 'danger')
         
     return redirect(url_for('dashboard'))
-
 
 # 6. Logout Route
 @app.route('/logout')
@@ -156,4 +137,5 @@ def logout():
     logout_user()
     flash('Logged out successfully.', 'info')
     return redirect(url_for('login'))
+
 app = app
