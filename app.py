@@ -5,6 +5,9 @@ from config import Config
 from models import db, User, Task
 
 app = Flask(__name__)
+app = Flask(__name__)
+app.config['DEBUG'] = True
+app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config.from_object(Config)
 
 login_manager = LoginManager()
@@ -141,3 +144,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    
