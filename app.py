@@ -1,3 +1,19 @@
+import sys
+import traceback
+from flask import Flask
+
+app = Flask(__name__)
+
+# Catch all import/runtime crashes and print them on screen
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    try:
+        # Apni baki app logic import/run karne ki koshish
+        import main_app # Ya jo bhi aap ka main logic handler hai
+    except Exception as e:
+        return f"<h1>Deployment Diagnostic Error:</h1><pre>{traceback.format_exc()}</pre>", 500
+
 from flask import Flask, render_template , request ,redirect , url_for , flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -140,7 +156,4 @@ def logout():
     logout_user()
     flash('Logged out successfully.', 'info')
     return redirect(url_for('login'))
-
-if __name__ == '__main__':
-    app.run(debug=True)
-    
+app = app
